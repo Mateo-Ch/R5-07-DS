@@ -1,0 +1,46 @@
+name: Q3 Archive Java
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'Q3.java'
+
+permissions:
+  contents: write
+
+jobs:
+  archive-q3-java:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Generate Q3_archive_java.txt
+        run: |
+          if [ ! -f "Q3.java" ]; then
+            echo "Erreur : Q3.java est introuvable à la racine du dépôt."
+            exit 1
+          fi
+
+          NOM_PRENOM="Mateo CHEVEAU"
+
+          {
+            echo "Nom et prénom : ${NOM_PRENOM}"
+            echo "--- Contenu de Q3.java ---"
+            cat "Q3.java"
+          } > Q3_archive_java.txt
+
+      - name: Commit and push Q3_archive_java.txt
+        run: |
+          git config user.name "Mateo-Ch"
+          git config user.email "mateocheveau2109@gmail.com"
+          git add Q3_archive_java.txt
+          if git diff --staged --quiet; then
+            echo "Aucun changement à pousser."
+            exit 0
+          fi
+          git commit -m "chore: create Q3_archive_java.txt from Q3.java"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
