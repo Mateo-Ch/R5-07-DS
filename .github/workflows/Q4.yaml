@@ -1,0 +1,50 @@
+name: Q4 Archive Java with Date
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'Q4.java'
+
+permissions:
+  contents: write
+
+jobs:
+  archive-q4-java:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Generate Q4_archive_JJ-MM-AAAA.txt
+        run: |
+          if [ ! -f "Q4.java" ]; then
+            echo "Erreur : Q4.java est introuvable à la racine du dépôt."
+            exit 1
+          fi
+
+          NOM_PRENOM="Mateo CHEVEAU"
+          DATE_JJ_MM_AAAA="$(date -u '+%d-%m-%Y')"
+          ARCHIVE_NAME="Q4_archive_${DATE_JJ_MM_AAAA}.txt"
+
+          {
+            echo "Nom et prénom : ${NOM_PRENOM}"
+            echo "--- Contenu de Q4.java ---"
+            cat "Q4.java"
+          } > "${ARCHIVE_NAME}"
+
+          echo "ARCHIVE_NAME=${ARCHIVE_NAME}" >> "$GITHUB_ENV"
+
+      - name: Commit and push Q4_archive_JJ-MM-AAAA.txt
+        run: |
+          git config user.name "Mateo-Ch"
+          git config user.email "mateocheveau2109@gmail.com"
+          git add "${ARCHIVE_NAME}"
+          if git diff --staged --quiet; then
+            echo "Aucun changement à pousser."
+            exit 0
+          fi
+          git commit -m "chore: create ${ARCHIVE_NAME} from Q4.java"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
