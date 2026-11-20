@@ -1,2 +1,35 @@
-Aucun précédent fichier Q6_archive_*.txt trouvé pour la comparaison.
-Fichier actuel créé : Q6_archive_20-11-2026-133308.txt
+Comparaison entre Q6_archive_20-11-2026-133308.txt (précédent) et Q6_archive_20-11-2026-133426.txt (actuel) :
+--- Q6_archive_20-11-2026-133308.txt	2026-11-20 13:34:26.370580122 +0000
++++ Q6_archive_20-11-2026-133426.txt	2026-11-20 13:34:26.514405084 +0000
+@@ -1,18 +1,24 @@
+ Nom et prénom : Mateo CHEVEAU
+-Taille de Q6.java : 20 lignes, 574 caractères
++Taille de Q6.java : 26 lignes, 622 caractères
+ --- Contenu de Q6.java ---
+-public class Q6 {
+-    public static void main(String[] args) {
+-        if (args.length < 1) {
++public class Q6
++{
++    public static void main(String[] args)
++    {
++        if (args.length < 1)
++        {
+             System.out.println("Usage: java Q6 <N>");
+             return;
+         }
+ 
+         int n = Integer.parseInt(args[0]);
+-        for (int row = 1; row <= n; row++) {
++        for (int row = 1; row <= n; row++)
++        {
+             StringBuilder line = new StringBuilder();
+-            for (int val = 1; val <= row; val++) {
+-                if (val > 1) {
++            for (int val = 1; val <= row; val++)
++            {
++                if (val > 1)
++                {
+                     line.append(" ");
+                 }
+                 line.append("x");
