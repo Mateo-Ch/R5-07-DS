@@ -1,0 +1,39 @@
+name: Archive XYZ for Q1
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'XYZ.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  archive-xyz:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Copy XYZ.txt to Q1_archive_XYZ.txt
+        run: |
+          if [ ! -f "XYZ.txt" ]; then
+            echo "Erreur : XYZ.txt est introuvable à la racine du dépôt."
+            exit 1
+          fi
+          cp XYZ.txt Q1_archive_XYZ.txt
+
+      - name: Commit and push Q1_archive_XYZ.txt
+        run: |
+          git config user.name "Mateo-Ch"
+          git config user.email "mateocheveau2109@gmail.com"
+          git add Q1_archive_XYZ.txt
+          if git diff --staged --quiet; then
+            echo "Aucun changement à pousser."
+            exit 0
+          fi
+          git commit -m "chore: create Q1_archive_XYZ.txt from XYZ.txt"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
