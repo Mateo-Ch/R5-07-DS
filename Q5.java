@@ -6,10 +6,10 @@ public class Q5 {
         }
 
         int n = Integer.parseInt(args[0]);
-        for (int row = n; row >= 1; row--) {
+        for (int row = 1; row <= n; row++) {
             StringBuilder line = new StringBuilder();
-            for (int val = row; val >= 1; val--) {
-                if (val < row) {
+            for (int val = 1; val <= row; val++) {
+                if (val > 1) {
                     line.append(" ");
                 }
                 line.append(val);
