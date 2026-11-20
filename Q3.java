@@ -1,0 +1,23 @@
+public class Q3 {
+    public static void main(String[] args) {
+        if (args.length < 1) {
+            System.out.println("Usage: java Q3 <N>");
+            return;
+        }
+
+        int n = Integer.parseInt(args[0]);
+        if (n < 1) {
+            System.out.println();
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = n; i >= 1; i--) {
+            if (i < n) {
+                sb.append(" ");
+            }
+            sb.append(i);
+        }
+        System.out.println(sb.toString());
+    }
+}
