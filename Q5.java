@@ -12,7 +12,7 @@ public class Q5 {
                 if (val > 1) {
                     line.append(" ");
                 }
-                line.append(val);
+                line.append("x");
             }
             System.out.println(line.toString());
         }
