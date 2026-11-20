@@ -1,0 +1,69 @@
+name: Q6 Archive and Diff
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'Q6.java'
+
+permissions:
+  contents: write
+
+jobs:
+  archive-and-diff-q6:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Generate Q6_archive_JJ-MM-AAAA-HHMMSS.txt and Q6_différences.txt
+        run: |
+          if [ ! -f "Q6.java" ]; then
+            echo "Erreur : Q6.java est introuvable à la racine du dépôt."
+            exit 1
+          fi
+
+          # Repère le précédent dernier fichier Q6_archive_*.txt (s'il existe déjà)
+          PREV_ARCHIVE="$(ls -1 Q6_archive_*.txt 2>/dev/null | sort | tail -n 1 || true)"
+
+          NOM_PRENOM="Mateo CHEVEAU"
+          DATE_STAMP="$(date -u '+%d-%m-%Y-%H%M%S')"
+          NEW_ARCHIVE="Q6_archive_${DATE_STAMP}.txt"
+
+          NB_LIGNES="$(wc -l < "Q6.java")"
+          NB_CARACTERES="$(wc -m < "Q6.java")"
+
+          {
+            echo "Nom et prénom : ${NOM_PRENOM}"
+            echo "Taille de Q6.java : ${NB_LIGNES} lignes, ${NB_CARACTERES} caractères"
+            echo "--- Contenu de Q6.java ---"
+            cat "Q6.java"
+          } > "${NEW_ARCHIVE}"
+
+          if [ -n "${PREV_ARCHIVE}" ] && [ -f "${PREV_ARCHIVE}" ]; then
+            {
+              echo "Comparaison entre ${PREV_ARCHIVE} (précédent) et ${NEW_ARCHIVE} (actuel) :"
+              diff -u "${PREV_ARCHIVE}" "${NEW_ARCHIVE}" || true
+            } > "Q6_différences.txt"
+          else
+            {
+              echo "Aucun précédent fichier Q6_archive_*.txt trouvé pour la comparaison."
+              echo "Fichier actuel créé : ${NEW_ARCHIVE}"
+            } > "Q6_différences.txt"
+          fi
+
+          echo "NEW_ARCHIVE=${NEW_ARCHIVE}" >> "$GITHUB_ENV"
+
+      - name: Commit and push Q6_archive_*.txt and Q6_différences.txt
+        run: |
+          git config user.name "Mateo-Ch"
+          git config user.email "mateocheveau2109@gmail.com"
+          git add "${NEW_ARCHIVE}" "Q6_différences.txt"
+          if git diff --staged --quiet; then
+            echo "Aucun changement à pousser."
+            exit 0
+          fi
+          git commit -m "chore: create ${NEW_ARCHIVE} and Q6_différences.txt"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
